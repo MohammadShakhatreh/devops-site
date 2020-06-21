@@ -1,17 +1,17 @@
+# Update system and Install nessesary things
+
+```bash
+$ sudo apt update
+$ sudo apt upgrade -y
+$ sudo apt install nginx virtualenv
+```
+
 # Install Dependencies
 
 ```bash
-$ virtualenv venv
+$ virtualenv venv --python=python3
 $ source venv/bin/activate
 $ pip install -r requirements.txt
-```
-
-# initialize the project
-
-```bash
-$ python manage.py migrate
-$ python manage.py createsuperuser
-$ python manage.py collectstatic
 ```
 
 # Update the following in settings.py
@@ -29,10 +29,21 @@ DATABASES = {
 }
 ```
 
+# initialize the project
+
+```bash
+# these apply when the db is not initalized yet.
+$ python manage.py migrate
+$ python manage.py createsuperuser
+
+# this should be run on every instance
+$ python manage.py collectstatic
+```
+
 # Install systemd files
 
 ```bash
-$ cp gunicorn.* /etc/systemd/system/
+$ sudo cp deployment/gunicorn.* /etc/systemd/system/
 $ sudo systemctl start gunicorn.socket
 $ sudo systemctl enable gunicorn.socket
 ```
@@ -40,8 +51,16 @@ $ sudo systemctl enable gunicorn.socket
 # Configure nginx
 
 ```bash
-$ rm /etc/nginx/sites-enabled/default
+$ sudo rm /etc/nginx/sites-enabled/default
 
-$ cp mo-sh.xyz /etc/nginx/sites-available
-$ ln -s /etc/nginx/sites-available/mo-sh.xyz /etc/nginx/sites-enabled
+$ sudo cp deployment/mo-sh.xyz /etc/nginx/sites-available
+$ sudo ln -s /etc/nginx/sites-available/mo-sh.xyz /etc/nginx/sites-enabled
+
+$ sudo systemctl restart nginx.service
+```
+
+# Update _base.html to see what instance you are in
+
+```bash
+$ vim polls/templates/polls/_base.html
 ```
